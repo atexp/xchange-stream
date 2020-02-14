@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import info.bitrich.xchangestream.binance.dto.BaseBinanceWebSocketTransaction.BinanceWebSocketTypes;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
 
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import io.reactivex.Observable;
 
 import org.slf4j.Logger;
@@ -28,6 +30,12 @@ public class BinanceUserDataStreamingService extends JsonNettyStreamingService {
 
     public Observable<JsonNode> subscribeChannel(BinanceWebSocketTypes eventType) {
     	return super.subscribeChannel(eventType.getSerializedValue());
+    }
+
+    @Override
+    protected void handleIdle(ChannelHandlerContext ctx) {
+        LOG.debug("Idle detected in " + this + ", sending ping");
+        ctx.writeAndFlush(new PingWebSocketFrame());
     }
 
     @Override

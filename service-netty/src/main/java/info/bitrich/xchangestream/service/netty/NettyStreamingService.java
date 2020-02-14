@@ -58,7 +58,7 @@ public abstract class NettyStreamingService<T> extends ConnectableService {
 
     protected static final Duration DEFAULT_CONNECTION_TIMEOUT = Duration.ofSeconds(10);
     protected static final Duration DEFAULT_RETRY_DURATION = Duration.ofSeconds(15);
-    protected static final int DEFAULT_IDLE_TIMEOUT = 0;
+    protected static final int DEFAULT_IDLE_TIMEOUT = Integer.parseInt(System.getProperty("websocket_idle_timeout", "0"));
 
     private class Subscription {
         final ObservableEmitter<T> emitter;

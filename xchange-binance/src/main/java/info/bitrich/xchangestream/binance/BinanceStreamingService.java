@@ -6,14 +6,25 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import info.bitrich.xchangestream.core.ProductSubscription;
 import info.bitrich.xchangestream.service.netty.JsonNettyStreamingService;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.http.websocketx.PingWebSocketFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BinanceStreamingService extends JsonNettyStreamingService {
+    private final Logger LOG = LoggerFactory.getLogger(this.getClass());
 
     private final ProductSubscription productSubscription;
 
     public BinanceStreamingService(String baseUri, ProductSubscription productSubscription) {
         super(baseUri, Integer.MAX_VALUE);
         this.productSubscription = productSubscription;
+    }
+
+    @Override
+    protected void handleIdle(ChannelHandlerContext ctx) {
+        LOG.debug("Idle detected in " + this + ", sending ping");
+        ctx.writeAndFlush(new PingWebSocketFrame());
     }
 
     @Override
